@@ -7,7 +7,15 @@ export const REVALIDATE_MIN = 60000; // 1 min
 
 export const api = ky.extend({
   hooks: {
-    beforeRequest: [(req) => console.log("Requesting", req.url)],
+    beforeRequest: [
+      (req) => {
+        console.log("Requesting", req.url);
+        const token = localStorage.getItem("openai_token");
+        const org = localStorage.getItem("openai_org_id");
+        if (token) req.headers.set("Authorization", `Bearer ${token}`);
+        if (org) req.headers.set("OpenAI-Organization", org);
+      },
+    ],
     afterResponse: [(req) => console.log("Responded", req.url)],
   },
 });

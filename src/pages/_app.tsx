@@ -21,7 +21,7 @@ import "@/globals.css";
 
 export default function App({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps: { ...pageProps },
 }: AppProps) {
   const [queryClient] = React.useState(
     () =>
@@ -62,31 +62,18 @@ export default function App({
   );
 
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <FeatureFlagProvider
-          initialFlags={[
-            { id: "test", enabled: false },
-            { id: "new-menu", enabled: true },
-          ]}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Tooltip.Provider delayDuration={200}>
-              <Component {...pageProps} />
-            </Tooltip.Provider>
-          </ThemeProvider>
-          <FeatureFlagManager />
-        </FeatureFlagProvider>
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-right"
-        />
-      </QueryClientProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <Tooltip.Provider delayDuration={200}>
+          <Component {...pageProps} />
+        </Tooltip.Provider>
+      </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+    </QueryClientProvider>
   );
 }
