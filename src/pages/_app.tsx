@@ -18,6 +18,7 @@ import {
 import type { AppProps } from "next/app";
 
 import "@/globals.css";
+import { Toaster } from "@/components/sonner";
 
 export default function App({
   Component,
@@ -72,6 +73,7 @@ export default function App({
         <Tooltip.Provider delayDuration={200}>
           <Component {...pageProps} />
         </Tooltip.Provider>
+        <Toaster />
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
     </QueryClientProvider>

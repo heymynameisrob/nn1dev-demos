@@ -8,18 +8,63 @@ export interface Post {
   author: string;
   date: string;
   emoji: string;
+  resolved?: {
+    date: string;
+    content: string;
+  };
+  comments?: Comment[];
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  author: string;
+  date: string;
 }
 
 interface PostStore {
   posts: Post[];
   createPost: (post: Omit<Post, "id">) => void;
   deletePost: (id: string) => void;
+  updatePost: (id: string, post: Omit<Post, "id">) => void;
 }
 
 export const usePostStore = create<PostStore>()(
   persist(
     (set) => ({
       posts: [
+        {
+          id: "0",
+          emoji: "🤷",
+          title: "Is the legacy dashboard page still in use?",
+          content:
+            "<p>I noticed we still have the old dashboard analytics page at /dashboard/analytics-v1 in our codebase. It doesn't appear to be receiving any traffic according to our metrics, and we've since rebuilt this functionality in the new dashboard.</p><p>Should we deprecate this page and remove the code? Let me know your thoughts on if anyone is still using this or if we should keep it around for reference.</p>",
+          author: "James Chen",
+          date: "2024-11-25",
+          comments: [
+            {
+              id: 1,
+              content:
+                "I checked the logs and haven't seen any requests to this endpoint in over 3 months. I think it's safe to say it's not being actively used.",
+              author: "Sarah Johnson",
+              date: "2024-01-15",
+            },
+            {
+              id: 2,
+              content:
+                "While it's not in use, I'd recommend we keep the code around for now. There are some interesting patterns in there that we might want to reference for future analytics features.",
+              author: "Mike Peterson",
+              date: "2024-01-16",
+            },
+            {
+              id: 3,
+              content:
+                "Agreed with Mike - let's deprecate the route but preserve the code with a clear deprecated notice. We can revisit deletion in 6 months if we still haven't needed it.",
+              author: "Emma Taylor",
+              date: "2024-01-16",
+            },
+          ],
+        },
         {
           id: "1",
           emoji: "😁",
@@ -47,6 +92,45 @@ export const usePostStore = create<PostStore>()(
           author: "Alex Rodriguez",
           date: "2024-01-17",
         },
+        {
+          id: "4",
+          emoji: "🎨",
+          title: "Redesigning the Dashboard Posts Page",
+          content:
+            "<p>Today we're discussing the redesign of our dashboard's posts page to improve user experience and functionality. One key feature we're implementing is the ability to group posts by read/unread status, making it easier for users to manage their content consumption.</p><p>After careful consideration of user feedback and workflow analysis, we've decided to implement this grouping feature to help users better track their reading progress and prioritize important content.</p>",
+          author: "Emma Taylor",
+          date: "2024-11-25",
+          comments: [
+            {
+              id: 1,
+              content:
+                "I think adding the read/unread grouping feature would be really beneficial for user organization. It'll help people keep track of what they still need to review.",
+              author: "David Wilson",
+              date: "2024-01-18",
+            },
+            {
+              id: 2,
+              content:
+                "Agreed! We'll proceed with the read/unread grouping feature. It aligns well with our goal of improving content management efficiency.",
+              author: "Emma Taylor",
+              date: "2024-01-18",
+            },
+            {
+              id: 3,
+              content:
+                "We'll need to modify the backend API and database schema to support the read/unread tracking. Let's create tickets for both frontend and backend work.",
+              author: "Sarah Chen",
+              date: "2024-01-19",
+            },
+            {
+              id: 4,
+              content:
+                "The backend will need to store a read status flag per user per post. We should also consider adding an endpoint for bulk status updates.",
+              author: "Michael Park",
+              date: "2024-01-19",
+            },
+          ],
+        },
       ],
 
       createPost: (post) =>
@@ -58,6 +142,13 @@ export const usePostStore = create<PostStore>()(
               id: crypto.randomUUID(),
             },
           ],
+        })),
+
+      updatePost: (id: string, updatedPost: Partial<Post>) =>
+        set((state) => ({
+          posts: state.posts.map((post) =>
+            post.id === id ? { ...post, ...updatedPost } : post,
+          ),
         })),
 
       deletePost: (id) =>
